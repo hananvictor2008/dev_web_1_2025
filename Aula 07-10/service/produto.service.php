@@ -1,5 +1,5 @@
 <?php
-    include("../../model/produto.class.php");
+    include_once("../../model/produto.class.php");
     function cadastrarProduto($nome, $preco) {
         $produto = new Produto(null, $nome, $preco);
         $produto->cadastrar();

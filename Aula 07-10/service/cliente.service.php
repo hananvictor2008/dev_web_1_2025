@@ -1,5 +1,5 @@
 <?php
-    include("../../model/cliente.class.php");
+    include_once("../../model/cliente.class.php");
     function cadastrarCliente($nome, $telefone) {
         $cliente = new Cliente(null, $nome, $telefone);
         $cliente->cadastrar();

@@ -1,5 +1,5 @@
 <?php
-    include("class_pai.class.php");
+    include_once("class_pai.class.php");
     class Produto extends ClassePai {
         public $nome;
         public $preco;

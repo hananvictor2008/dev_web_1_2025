@@ -1,5 +1,5 @@
 <?php
-    include("class_pai.class.php");
+    include_once("class_pai.class.php");
     class Cliente extends ClassePai {
         public $nome;
         public $telefone;

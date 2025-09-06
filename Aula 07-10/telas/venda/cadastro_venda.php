@@ -1,60 +1,71 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cadastro de Funcionário</title>
-    <script src="cadastro_funcionario.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cadastro de Venda</title>
+
+<?php
+require_once __DIR__."/../../service/venda.service.php";
+require_once __DIR__."/../../service/cliente.service.php";
+require_once __DIR__."/../../service/funcionario.service.php";
+require_once __DIR__."/../../service/produto.service.php";
+
+// Carrega venda se estiver editando
+$venda = null;
+if(isset($_GET['id'])) {
+    $venda = pegaVendaPeloId($_GET['id']);
+}
+
+// Preparar array de produtos para JS
+$produtosJS = [];
+if($venda && !empty($venda->produtosVendidos)) {
+    foreach($venda->produtosVendidos as $p){
+        if($p) $produtosJS[] = ['id'=>$p->id ?? '', 'nome'=>$p->nome ?? ''];
+    }
+}
+?>
+<script>
+const produtosDisponiveis = <?php
+        $todosProdutos = listarTodosProdutos(); // array de objetos Produto
+        $produtosArray = array_map(function($p){
+            return ['id'=>$p->id,'nome'=>$p->nome];
+        }, $todosProdutos);
+        echo json_encode($produtosArray, JSON_HEX_TAG|JSON_HEX_APOS|JSON_HEX_QUOT|JSON_HEX_AMP);
+    ?>;
+</script>
+
+<script src="cadastro_venda.js" defer></script>
 </head>
 <body>
-<?php
-  include("../../service/funcionario.service.php");
-  include("../../service/cliente.service.php");
-  include("../../service/venda.service.php");
-    $venda = "";
-    if(isset($_GET["id"]))
-        $venda = pegaVendaPeloId($_GET["id"]);
 
-?>
-    <form id="formCadastroVenda" action="executa_acao_venda.php" method="post">
-        <input type="hidden" name="acao" value="<?php if(!empty($venda)) {
-            echo "alterar";
-        } else echo "cadastrar"; ?>"/>
+<form id="formCadastroVenda" action="executa_acao_venda.php" method="post">
+    <input type="hidden" name="acao" value="<?= $venda ? 'alterar':'cadastrar'; ?>"/>
+    <input type="hidden" name="id" value="<?= $venda->id ?? ''; ?>"/>
 
-        <input type="hidden" name="id" value="<?php echo isset($_GET["id"])?$_GET["id"]:"" ?>"/>
+    <label>Funcionário:</label>
+    <select name="funcionario">
+    <?php foreach(listarTodosFuncionarios() as $f): ?>
+        <option value="<?= $f->id ?>" <?= $venda && $venda->vendedor->id==$f->id ? 'selected':'' ?>><?= $f->nome ?></option>
+    <?php endforeach; ?>
+    </select><br>
 
-        <label for="nome">Funcionário que realizou a venda:</label>
-            <select name="funcionario">
-                <?php
-                    $funcionarios = listarTodosFuncionarios();
-                    foreach($funcionarios as $funcionario){
-                        echo "<option value=\"".$funcionario->id."\">".$funcionario->nome."</option>";
-                    }
-                ?>
-            </select>
+    <label>Cliente:</label>
+    <select name="cliente">
+    <?php foreach(listarTodosClientes() as $c): ?>
+        <option value="<?= $c->id ?>" <?= $venda && $venda->cliente->id==$c->id ? 'selected':'' ?>><?= $c->nome ?></option>
+    <?php endforeach; ?>
+    </select><br>
 
-        <label for="cliente">Cliente:</label>
-                <select name="cliente">
-                    <?php
-                        $clientes = listarTodosClientes();
-                        foreach($clientes as $cliente){
-                            echo "<option value=\"".$cliente->id."\">".$cliente->nome."</option>";
-                        }
-                    ?>
-                </select>
+    <button type="button" id="qtdProdutos"> + </button>
+    <div id="produtosContainer"></div>
+    <input type="hidden" name="numProdutos" id="numProdutos" value="0"/>
 
-        <?php $valorTotal = 0; ?>
+    <label>Valor Total:</label>
+    <input type="text" name="valorTotal" value="<?= $venda->valorTotal ?? 0 ?>"/>
 
-        <label for="qtdProdutos">Quantidade de Produtos</label><input type="number" id="qtdProdutos" name="qtdProdutos" value="<?php if(!empty($venda)) echo count($venda->produtosVendidos); else echo 1; ?>"/><br/>
-        <div id="produtosContainer">
-                    
-        </div>
+    <button type="submit"><?= $venda ? 'Alterar' : 'Cadastrar' ?></button>
+</form>
 
-        <label for="valorTotal">Valor Total:</label><input type="text" id="valorTotal" name="valorTotal" value="<?php echo $valorTotal;?>"/>
-
-        <button type="submit"><?php if(!empty($venda)) {
-            echo "Alterar";
-        } else echo "Cadastrar"; ?></button>
-    </form>
 </body>
 </html>

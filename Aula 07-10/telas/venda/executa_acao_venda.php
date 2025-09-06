@@ -1,23 +1,35 @@
-<?
-  include("../../service/funcionario.service.php");
-  $acao = $_POST['acao'];
-  $nome = isset($_POST['nome'])?$_POST['nome']:null;
-  $salario = isset($_POST['salario'])?$_POST['salario']:null;
-  $telefone = isset($_POST['telefone'])?$_POST['telefone']:null;
-  $id = isset($_POST['id'])?$_POST['id']:null;
-  if($acao=="cadastrar") {
-    cadastrarFuncionario($nome, $salario, $telefone);
-    echo "Cadastrado com sucesso";
-  }
-  else if($acao=="alterar") {
-    alterarFuncionario($id, $nome, $salario, $telefone);
-    echo "Alterado com sucesso";
-  }
-  else if($acao=="remover") {
-    removerFuncionario($id);
-    echo "Removido com sucesso";
-  }
-  else {
-    echo "Ação inválida";
-  }
+<?php
+include_once("../../service/venda.service.php");
+
+$acao = $_POST['acao'] ?? $_GET['acao'] ?? '';
+$id = $_POST['id'] ?? $_GET['id'] ?? '';
+$cliente = $_POST['cliente'] ?? null;
+$vendedor = $_POST['funcionario'] ?? null;
+$numProdutos = $_POST['numProdutos'] ?? 0;
+$produtosVendidos = [];
+
+for($i=1; $i<=$numProdutos; $i++) {
+    if(isset($_POST['produto'.$i]) && $_POST['produto'.$i] != "") {
+        $produtosVendidos[] = $_POST['produto'.$i];
+    }
+}
+
+$valorTotal = $_POST['valorTotal'] ?? null;
+
+switch($acao) {
+    case "cadastrar":
+        cadastrarVenda($cliente, $vendedor, $produtosVendidos, $valorTotal);
+        echo "Cadastrado com sucesso";
+        break;
+    case "alterar":
+        alterarVenda($id, $cliente, $vendedor, $produtosVendidos, $valorTotal);
+        echo "Alterado com sucesso";
+        break;
+    case "remover":
+        removerVenda($id);
+        echo "Removido com sucesso";
+        break;
+    default:
+        echo "Ação inválida";
+}
 ?>

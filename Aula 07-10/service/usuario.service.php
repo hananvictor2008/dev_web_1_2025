@@ -1,5 +1,5 @@
 <?php
-    include("../../model/usuario.class.php");
+    include_once("../model/usuario.class.php");
     function cadastrarUsuario($nome, $senha, $email) {
         $usuario = new Usuario(null, $nome, $senha, $email);
         $usuario->cadastrar();

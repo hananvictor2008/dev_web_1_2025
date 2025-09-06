@@ -1,10 +1,10 @@
 <?php
-    include("class_pai.class.php");
+    include_once("class_pai.class.php");
     class Usuario extends ClassePai {
         public $nome;
         public $email;
         public $senha;
-        const NOME_ARQUIVO = "../../db/usuario.txt";
+        const NOME_ARQUIVO = "../db/usuario.txt";
 
         public function __construct($id, $nome, $senha, $email) {
             parent::__construct($id, self::NOME_ARQUIVO);

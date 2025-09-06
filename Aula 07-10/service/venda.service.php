@@ -1,61 +1,79 @@
 <?php
-    include("../../model/venda.class.php");
-    function cadastrarVenda($cliente, $vendedor, $produtosVendidos, $valorTotal) {
-        $venda = new Venda(null, $cliente, $vendedor, $produtosVendidos, $valorTotal);
+require_once __DIR__."/../model/venda.class.php";
+require_once __DIR__."/../model/cliente.class.php";
+require_once __DIR__."/../model/funcionario.class.php";
+require_once __DIR__."/../model/produto.class.php";
+
+function cadastrarVenda($cliente, $vendedor, $produtosVendidos, $valorTotal) {
+    $clienteObj = Cliente::pegaPorId($cliente);
+    $vendedorObj = Funcionario::pegaPorId($vendedor);
+    $produtosObjs = [];
+    foreach ($produtosVendidos as $idProd) {
+        $prod = Produto::pegaPorId($idProd);
+        if($prod) $produtosObjs[] = $prod;
+    }
+    if($clienteObj && $vendedorObj) {
+        $venda = new Venda(null, $clienteObj, $vendedorObj, $produtosObjs, $valorTotal);
         $venda->cadastrar();
-
     }
+}
 
-    function pegaVendaPeloId($id) {
-        return Venda::pegaPorId($id);
-    }
+function pegaVendaPeloId($id) {
+    return Venda::pegaPorId($id);
+}
 
-    function alterarVenda($id, $novoCliente, $novoVendedor, $novosProdutosVendidos, $novoValorTotal) {
-        $venda = Venda::pegaPorId($id);
-        if ($venda) {
-            $venda->nome = $novoCliente;
-            $venda->vendedor = $novoVendedor;
-            $venda->produtosVendidos = $novosProdutosVendidos;
+function alterarVenda($id, $novoCliente, $novoVendedor, $novosProdutosVendidos, $novoValorTotal) {
+    $venda = Venda::pegaPorId($id);
+    if ($venda) {
+        $clienteObj = Cliente::pegaPorId($novoCliente);
+        $vendedorObj = Funcionario::pegaPorId($novoVendedor);
+        $produtosObjs = [];
+        foreach ($novosProdutosVendidos as $idProd) {
+            $prod = Produto::pegaPorId($idProd);
+            if($prod) $produtosObjs[] = $prod;
+        }
+        if($clienteObj && $vendedorObj) {
+            $venda->cliente = $clienteObj;
+            $venda->vendedor = $vendedorObj;
+            $venda->produtosVendidos = $produtosObjs;
             $venda->valorTotal = $novoValorTotal;
             $venda->alterar();
         }
     }
+}
 
-    function removerVenda($id) {
-        $venda = Venda::pegaPorId($id);
-        if ($venda) {
-             $venda->remover();
+function removerVenda($id) {
+    $venda = Venda::pegaPorId($id);
+    if ($venda) {
+        $venda->remover();
+    }
+}
+
+function listarVendas($filtroNome) {
+    $vendas = Venda::listar($filtroNome);
+    $vendaMaisProdutos = Venda::vendaComMaisProdutos();
+    $maxProdutos = $vendaMaisProdutos ? count($vendaMaisProdutos->produtosVendidos) : 0;
+
+    echo "<table border='1'><thead><tr>";
+    echo "<th>Vendedor</th><th>Cliente</th>";
+    for($i = 0; $i < $maxProdutos; $i++){
+        echo "<th>Produto ".($i+1)."</th>";
+    }
+    echo "<th>Valor Total</th><th colspan='2'>Ações</th></tr></thead><tbody>";
+
+    foreach($vendas as $venda) {
+        echo "<tr>";
+        echo "<td>".$venda->vendedor->nome."</td>";
+        echo "<td>".$venda->cliente->nome."</td>";
+        for($i = 0; $i < $maxProdutos; $i++){
+            echo "<td>".($venda->produtosVendidos[$i]->nome ?? "-")."</td>";
         }
+        echo "<td>".$venda->valorTotal."</td>";
+        echo "<td><a href='cadastro_venda.php?id=".$venda->id."'>Alterar</a></td>";
+        echo "<td><a href='executa_acao_venda.php?id=".$venda->id."&acao=remover'>Remover</a></td>";
+        echo "</tr>";
     }
 
-    function listarVendas($filtroNome) {
-        $vendas = Venda::listar($filtroNome);
-        echo "<table><thead><tr><th>Vendedor</th><th>Cliente</th>";
-        for($i = 0; $i < Venda::vendaComMaisProdutos; $i++){
-            echo "<th>Produto ".($i+1)."</th>";
-        }
-        echo "<th>Ações</th></tr></thead>";
-        echo "<tbody>";
-        foreach($vendas as $venda) {
-            echo "<tr><td>".$venda->vendedor."</td>";
-            echo "<tr><td>".$venda->cliente."</td>";
-            for($i = 0; $i < Venda::vendaComMaisProdutos; $i++){
-                if(isset($venda->produtosVendidos[$i]))
-                    echo "<tr><td>".$venda->produtosVendidos[$i]."</td></tr>";
-                else
-                    echo "<tr><td> - </td></tr>";
-            }
-            echo "<td>".$venda->preco."</td>";
-            echo "<td><a href='http://localhost/hanan/Aula%2007-10/telas/produto/cadastro_venda.php?id=".$venda->id."'>Alterar</a></td></tr>";
-        }
-        echo "</tbody></table>";
-
-    }
-
-
-    function listarTodosProdutos() {
-        return Venda::listar("");
-    }
-
+    echo "</tbody></table>";
+}
 ?>
-

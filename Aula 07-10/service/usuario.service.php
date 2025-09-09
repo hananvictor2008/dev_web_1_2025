@@ -1,5 +1,6 @@
 <?php
-    include_once("../model/usuario.class.php");
+    if($_SESSION["i"]) include_once("../model/usuario.class.php");
+    else include_once("../../model/usuario.class.php");
     function cadastrarUsuario($nome, $senha, $email) {
         $usuario = new Usuario(null, $nome, $senha, $email);
         $usuario->cadastrar();

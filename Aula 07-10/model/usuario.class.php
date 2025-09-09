@@ -33,7 +33,7 @@
         }
         
         static public function listar($filtroNome) {
-            $arquivo = fopen(self::NOME_ARQUIVO, "r+");
+            $arquivo = fopen("../".self::NOME_ARQUIVO, "r+");
             $retorno = [];
             while(!feof($arquivo)){
                 $linha = fgets($arquivo);

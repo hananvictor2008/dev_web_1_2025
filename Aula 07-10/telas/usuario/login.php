@@ -1,3 +1,7 @@
+<?php
+    session_start();
+    $_SESSION["i"]=0;
+?>
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>

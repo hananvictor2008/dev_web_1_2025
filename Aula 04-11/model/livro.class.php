@@ -9,7 +9,6 @@ class Livro extends ClassePai {
     public $genero;
     public $localizacao;
     public $ISSN;
-    public $qtd;
 
     public function toEntity($dados){
         return new Livro(
@@ -20,12 +19,89 @@ class Livro extends ClassePai {
             $dados[4],
             $dados[5],
             $dados[6],
-            $dados[7],
-            $dados[8]
+            $dados[7]
         );
     }
 
-    public function __construct($id, $titulo, $autor, $editora, $anoPublicacao, $genero, $localizacao, $ISSN, $qtd){
+    public function cadastrar($conn){
+        $SQL = "INSERT INTO livros (titulo, autor, editora, anoPublicacao, genero, localizacao, ISSN) VALUES (
+            '$this->titulo',
+            '$this->autor',
+            '$this->editora',
+            '$this->anoPublicacao',
+            '$this->genero',
+            '$this->localizacao',
+            '$this->ISSN'
+        )";
+        $resultado = $conn->query($SQL);
+        if($resultado){
+            $this->id = $conn->insert_id;
+        }
+    }
+
+    public function alterar($conn){
+        $SQL = "UPDATE livros SET 
+            titulo = '$this->titulo',
+            autor = '$this->autor',
+            editora = '$this->editora',
+            anoPublicacao = '$this->anoPublicacao',
+            genero = '$this->genero',
+            localizacao = '$this->localizacao',
+            ISSN = '$this->ISSN'
+        WHERE id = $this->id";
+        $conn->query($SQL);
+    }
+
+        static public function pegaPorISSN($ISSN, $conn) {
+        $SQL = "SELECT * FROM livros WHERE ISSN = $ISSN";
+        $resultado = $conn->mysql_query($SQL);
+        if($resultado){
+            $dados = $conn->fetch_array($resultado);
+            var_dump($dados);
+            return new Livro(
+                $dados['id'],
+                $dados['titulo'],
+                $dados['autor'],
+                $dados['editora'],
+                $dados['anoPublicacao'],
+                $dados['genero'],
+                $dados['localizacao'],
+                $dados['ISSN']
+            );
+        }
+    }
+    static public function pegaPorId($id, $conn) {
+        $SQL = "SELECT * FROM livros WHERE id = $id";
+        $resultado = $conn->mysql_query($SQL);
+        if($resultado){
+            $dados = $conn->fetch_array($resultado);
+            return new Livro(
+                $dados['id'],
+                $dados['titulo'],
+                $dados['autor'],
+                $dados['editora'],
+                $dados['anoPublicacao'],
+                $dados['genero'],
+                $dados['localizacao'],
+                $dados['ISSN']
+            );
+        }
+        /*$arquivo = fopen("database/livros.txt"
+        , "r");
+        while(!feof($arquivo)){
+            $linha = fgets($arquivo);
+            if(empty($linha))
+                continue;
+            $dados = explode(self::SEPARADOR, $linha);
+            if($dados[0] == $id){
+                fclose($arquivo);
+                return $this->toEntity($dados);
+            }
+        }
+        fclose($arquivo);*/
+    }
+
+    public function __construct($id, $titulo, $autor, $editora, $anoPublicacao, $genero, $localizacao, $ISSN) {
         parent::__construct($id, "database/livros.txt");
         $this->titulo = $titulo;
         $this->autor = $autor;
@@ -34,32 +110,41 @@ class Livro extends ClassePai {
         $this->genero = $genero;
         $this->localizacao = $localizacao;
         $this->ISSN = $ISSN;
-        $this->qtd = $qtd;
     }
 
-    static public function listar($filtroNome) {
+    static public function listar($filtroNome, $conn) {
+        /*
             $arquivo = fopen("database/livros.txt", "r");
             $retorno = [];
             while(!feof($arquivo)){
-                $linha = trim(fgets($arquivo));
+                $linha = fgets($arquivo);
                 if(empty($linha))
                     continue;
                 $dados = explode(self::SEPARADOR, $linha);
                 if(str_contains($dados[1], $filtroNome)){
-                    array_push($retorno, new Livro(
-                        @$dados[0],
-                        @$dados[1],
-                        @$dados[2],
-                        @$dados[3],
-                        @$dados[4],
-                        @$dados[5],
-                        @$dados[6],
-                        @$dados[7],
-                        @$dados[8]
-                    ));
+                    array_push($retorno,$this->toEntity($dados));
                 }
+                
             }
             return $retorno;
+            */
+        $SQL = "SELECT * FROM livros WHERE titulo LIKE '%$filtroNome%'";
+        $resultado = $conn->query($SQL);
+        $retorno = [];
+        while($dados = $resultado->fetch_array()){
+            $livro = new Livro(
+                $dados['id'],
+                $dados['titulo'],
+                $dados['autor'],
+                $dados['editora'],
+                $dados['anoPublicacao'],
+                $dados['genero'],
+                $dados['localizacao'],
+                $dados['ISSN']
+            );
+            array_push($retorno, $livro);
+        }
+        return $retorno;
     }
 
     function montaLinhaDados()
@@ -71,8 +156,7 @@ class Livro extends ClassePai {
                $this->anoPublicacao.self::SEPARADOR.
                $this->genero.self::SEPARADOR.
                $this->localizacao.self::SEPARADOR.
-               $this->ISSN.self::SEPARADOR.
-               $this->qtd;
+               $this->ISSN;
     }
 }
 ?>

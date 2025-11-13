@@ -2,7 +2,10 @@
   require_once __DIR__ . "/GenericController.php";
 require_once __DIR__ . "/../model/livro.class.php";
 class LivroController implements GenericController{
-    
+    private $conn;
+    public function __construct($conn) {
+        $this->conn = $conn;
+    }
     function cadastrar($dadosRecebidos){
         $livro = new Livro(
             null,
@@ -12,17 +15,16 @@ class LivroController implements GenericController{
             $dadosRecebidos->anoPublicacao,
             $dadosRecebidos->genero,
             $dadosRecebidos->localizacao,
-            $dadosRecebidos->ISSN,
-            $dadosRecebidos->qtd
+            $dadosRecebidos->ISSN
         );
-        $livro->cadastrar();
+        $livro->cadastrar($this->conn);
     }
 
     function listar($dadosRecebidos){
-        return Livro::listar($dadosRecebidos);
+        return Livro::listar($dadosRecebidos, $this->conn);
     }
     function alterar($dadosRecebidos){
-        $livro = LivroController::pegaPorId($dadosRecebidos->id);
+        $livro = Livro::pegaPorId($dadosRecebidos->id, $this->conn);
         $livro->titulo = $dadosRecebidos["titulo"];
         $livro->autor = $dadosRecebidos["autor"];
         $livro->editora = $dadosRecebidos["editora"];
@@ -30,12 +32,12 @@ class LivroController implements GenericController{
         $livro->genero = $dadosRecebidos["genero"];
         $livro->localizacao = $dadosRecebidos["localizacao"];
         $livro->ISSN = $dadosRecebidos["ISSN"];
-        $livro->qtd = $dadosRecebidos["qtd"];
-        $livro->alterar();
+        $livro->alterar($this->conn);
     }
     function remover($dadosRecebidos){
-       $livro = LivroController::pegaPorId($dadosRecebidos->id);
-       $livro->remover();
+       $livro = Livro::pegaPorISSN($dadosRecebidos->id, $this->conn);
+       var_dump($livro);
+       $livro->remover($this->conn);
     }
 }
 

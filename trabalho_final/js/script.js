@@ -40,13 +40,13 @@ const btnRegistrarRetirada = document.querySelector("#registrarRetirada")
  * @param {*} issn 
  * @param {*} quantidade
  */
-function Livro(titulo, autor, editora, ano, genero, local, issn, qtd) {
+function Livro(titulo, autor, editora, anoPublicacao, genero, localizacao, issn, qtd) {
     this.titulo = titulo
     this.autor = autor
     this.editora = editora
-    this.ano = ano
+    this.anoPublicacao = anoPublicacao
     this.genero = genero
-    this.local = local
+    this.localizacao = localizacao
     this.ISSN = issn
     this.qtd = qtd
 }
@@ -60,17 +60,17 @@ async function cadastrarExemplar() {
     const issn = document.querySelector("#novoIssn").value
     const titulo = document.querySelector("#novoTitulo").value
     const autor = document.querySelector("#novoAutor").value
-    const editoraR = document.querySelector("#novoEditora").value
-    const ano = parseInt(document.querySelector("#novoAno").value)
+    const editora = document.querySelector("#novoEditora").value
+    const anoPublicacao = parseInt(document.querySelector("#novoAno").value)
     const genero = document.querySelector("#novoGenero").value
-    const localizacaoR = document.querySelector("#novoLocal").value
+    const localizacao = document.querySelector("#novoLocal").value
     const quantidade = parseInt(document.querySelector("#novoQtd").value)
     let resposta = await fetch("http://localhost/hanan/aulas-2T/Aula%2004-11/?modulo=livro", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
         },
-        body: JSON.stringify(new Livro(titulo, autor, editoraR, ano, genero, localizacaoR, issn, quantidade))
+        body: JSON.stringify(new Livro(titulo, autor, editora, anoPublicacao, genero, localizacao, issn, quantidade))
     })
     console.log("chamando cadastrarExemplar")
 }
@@ -117,8 +117,13 @@ async function listarTodos() {
 /**
  * Função que deverá marcar o exemplar como indisponível no acervo
  */
-function registrarRetirada() {
-    
+async function registrarRetirada() {
+    const issnLivro = document.querySelector("#issnRetirada").value
+    let resposta = await fetch ("http://localhost/hanan/aulas-2T/Aula%2004-11/?modulo=livro", {
+        method: "DELETE",
+        headers: {"Content-type": "application/json"},
+        body: JSON.stringify({ISSN: issnLivro})
+    })
     console.log("chamando registrarRetirada")
 }
 

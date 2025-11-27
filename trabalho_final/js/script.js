@@ -1,5 +1,10 @@
 // Lista inicial de 50 livros
+<<<<<<< HEAD
 const backend = "http://localhost/hanan/aulas-2T/Aula%2004-11/?modulo=livro"
+=======
+const backend = "http://localhost/hanan/aulas-2T/Aula%2004-11/" + "?modulo=livro"
+//mover a pasta Aula 04 - 11 para o xampp/htdocs/ iniciar o php e sql no xampp abrir o index da pasta movida e colar o link na variavel a cima
+>>>>>>> 8c8d2b39b6662945c836d81310a16ce241ea9e4d
 const biblioteca = [
   { issn: "1001", titulo: "Dom Casmurro", autor: "Machado de Assis", editora: "Nova Fronteira", ano: 1899, genero: "Romance", local: "1-A", disponivel: true },
   { issn: "1002", titulo: "O Cortiço", autor: "Aluísio Azevedo", editora: "Saraiva", ano: 1890, genero: "Naturalismo", local: "1-B", disponivel: true },

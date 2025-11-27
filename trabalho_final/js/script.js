@@ -1,4 +1,5 @@
 // Lista inicial de 50 livros
+const backend = "http://localhost/hanan/aulas-2T/Aula%2004-11/?modulo=livro"
 const biblioteca = [
   { issn: "1001", titulo: "Dom Casmurro", autor: "Machado de Assis", editora: "Nova Fronteira", ano: 1899, genero: "Romance", local: "1-A", disponivel: true },
   { issn: "1002", titulo: "O Cortiço", autor: "Aluísio Azevedo", editora: "Saraiva", ano: 1890, genero: "Naturalismo", local: "1-B", disponivel: true },
@@ -62,7 +63,7 @@ async function cadastrarExemplar() {
     const anoPublicacao = parseInt(document.querySelector("#novoAno").value)
     const genero = document.querySelector("#novoGenero").value
     const localizacao = document.querySelector("#novoLocal").value
-    let resposta = await fetch("http://localhost/hanan/aulas-2T/Aula%2004-11/?modulo=livro", {
+    let resposta = await fetch(backend, {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
@@ -77,7 +78,7 @@ async function cadastrarExemplar() {
  * exemplares que satisfizerem a condição
  */
 async function consultarLivros() {
-    let resposta = await fetch("http://localhost/hanan/aulas-2T/Aula%2004-11/?modulo=livro")
+    let resposta = await fetch(backend)
     let livros = await resposta.json()
     let saida = document.querySelector("#saidaBusca")
     saida.innerHTML = ""
@@ -99,7 +100,7 @@ async function consultarLivros() {
  * Função que deverá listar na tela todos os livros do acervo
  */
 async function listarTodos() {
-    let resposta = await fetch("http://localhost/hanan/aulas-2T/Aula%2004-11/?modulo=livro")
+    let resposta = await fetch(backend)
     let livros = await resposta.json()
     let saida = document.querySelector("#saidaBusca")
     saida.innerHTML = ""
@@ -116,7 +117,7 @@ async function listarTodos() {
  */
 async function registrarRetirada() {
     const issnLivro = document.querySelector("#issnRetirada").value
-    let resposta = await fetch ("http://localhost/hanan/aulas-2T/Aula%2004-11/?modulo=livro", {
+    let resposta = await fetch (backend, {
         method: "DELETE",
         headers: {"Content-type": "application/json"},
         body: JSON.stringify({ISSN: issnLivro})

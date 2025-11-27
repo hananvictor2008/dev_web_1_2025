@@ -53,10 +53,10 @@ class Livro extends ClassePai {
     }
 
     static public function pegaPorISSN($ISSN, $conn) {
-        $SQL = "SELECT * FROM livros WHERE ISSN = $ISSN";
-        $resultado = $conn->mysql_query($SQL); //a função mysql_query retorna o resultado da execução do código sql
+        $SQL = "SELECT * FROM livros WHERE ISSN = '$ISSN'";
+        $resultado = $conn->query($SQL); //a função mysql_query retorna o resultado da execução do código sql
         if($resultado){
-            $dados = $conn->fetch_array($resultado); //transforma o resultado em um array
+            $dados = $resultado->fetch_array(); //transforma o resultado em um array
             var_dump($dados);
             return new Livro(
                 $dados['id'],
@@ -71,23 +71,10 @@ class Livro extends ClassePai {
         }
     }
 
-    static public function pegaPorId($id, $conn) {
-        $SQL = "SELECT * FROM livros WHERE id = $id";
-        $resultado = $conn->mysql_query($SQL);
-        if($resultado){
-            $dados = $conn->fetch_array($resultado);
-            return new Livro(
-                $dados['id'],
-                $dados['titulo'],
-                $dados['autor'],
-                $dados['editora'],
-                $dados['anoPublicacao'],
-                $dados['genero'],
-                $dados['localizacao'],
-                $dados['ISSN']
-            );
+        public function remover($conn){
+            $SQL = "DELETE FROM livros WHERE id = $this->id";
+            $conn->query($SQL);
         }
-    }
 
     public function __construct($id, $titulo, $autor, $editora, $anoPublicacao, $genero, $localizacao, $ISSN) {
         parent::__construct($id, "database/livros.txt");

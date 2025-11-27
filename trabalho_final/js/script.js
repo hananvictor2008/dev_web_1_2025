@@ -38,9 +38,8 @@ const btnRegistrarRetirada = document.querySelector("#registrarRetirada")
  * @param {*} genero 
  * @param {*} local 
  * @param {*} issn 
- * @param {*} quantidade
  */
-function Livro(titulo, autor, editora, anoPublicacao, genero, localizacao, issn, qtd) {
+function Livro(titulo, autor, editora, anoPublicacao, genero, localizacao, issn) {
     this.titulo = titulo
     this.autor = autor
     this.editora = editora
@@ -48,7 +47,6 @@ function Livro(titulo, autor, editora, anoPublicacao, genero, localizacao, issn,
     this.genero = genero
     this.localizacao = localizacao
     this.ISSN = issn
-    this.qtd = qtd
 }
 
 /**
@@ -64,13 +62,12 @@ async function cadastrarExemplar() {
     const anoPublicacao = parseInt(document.querySelector("#novoAno").value)
     const genero = document.querySelector("#novoGenero").value
     const localizacao = document.querySelector("#novoLocal").value
-    const quantidade = parseInt(document.querySelector("#novoQtd").value)
     let resposta = await fetch("http://localhost/hanan/aulas-2T/Aula%2004-11/?modulo=livro", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
         },
-        body: JSON.stringify(new Livro(titulo, autor, editora, anoPublicacao, genero, localizacao, issn, quantidade))
+        body: JSON.stringify(new Livro(titulo, autor, editora, anoPublicacao, genero, localizacao, issn))
     })
     console.log("chamando cadastrarExemplar")
 }

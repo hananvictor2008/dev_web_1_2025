@@ -49,3 +49,24 @@ table th, table td {
   border: 1px solid #000000;
   padding: 8px;
 }
+
+.esconder {
+  display: none;
+}
+
+.popup {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 20px;
+    background: white;
+    border: 2px solid #333;
+    box-shadow: 0 0 20px rgba(0,0,0,0.4);
+    z-index: 999;
+}
+
+.popup.ativo {
+    display: block;
+}

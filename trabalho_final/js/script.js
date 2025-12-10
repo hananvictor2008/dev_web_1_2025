@@ -1,4 +1,4 @@
-const backend = "http://localhost/hanan/aulas-2T/Aula%2004-11/" + "?modulo=livro"
+const backend = "http://localhost/hanan/trabalho_final/Aula%2004-11/" + "?modulo=livro"
 //mover a pasta Aula 04 - 11 para o xampp/htdocs/ iniciar o php e sql no xampp abrir o index da pasta movida e colar o link na variavel a cima
 const biblioteca = [
   { issn: "1001", titulo: "Dom Casmurro", autor: "Machado de Assis", editora: "Nova Fronteira", ano: 1899, genero: "Romance", local: "1-A", disponivel: true },
@@ -89,7 +89,7 @@ async function consultarLivros() {
                 livro.genero.toLowerCase().includes(busca)
     })
     livroFiltrado.forEach(livro => {
-        saida.innerHTML += `<tr><td>${livro.titulo}</td><td>${livro.autor}</td><td>${livro.editora}</td><td>${livro.anoPublicacao}</td><td>${livro.genero}</td><td>${livro.localizacao}</td><td>${livro.ISSN}</td></tr>`
+        saida.innerHTML += `<tr><td class="esconder">${livro.ISSN}</td><td>${livro.titulo}</td><td>${livro.autor}</td><td><a href="#">Mais</a></td></tr>`
     })
     console.log("chamando consultarLivros")
 }
@@ -103,9 +103,27 @@ async function listarTodos() {
     let saida = document.querySelector("#corpoTabelaBusca")
     saida.innerHTML = ""
     livros.forEach(livro => {
-       saida.innerHTML += `<tr><td>${livro.titulo}</td><td>${livro.autor}</td><td>${livro.editora}</td><td>${livro.anoPublicacao}</td><td>${livro.genero}</td><td>${livro.localizacao}</td><td>${livro.ISSN}</td></tr>` 
+       saida.innerHTML += `<tr><td class="esconder">${livro.ISSN}</td><td>${livro.titulo}</td><td>${livro.autor}</td><td><a href="#">Mais</a></td></tr>` 
     })
     console.log("chamando listarTodos")
+}
+
+async function mostrarPopup(issn) {
+    const popup = document.querySelector(".popup");
+    let resposta = await fetch(backend)
+    let livros = await resposta.json()
+    let livro = livros.find(l => l.ISSN === issn);
+    popup.innerHTML = `
+        <h3>Detalhes do Livro</h3>
+        <p><strong>Título:</strong> ${livro.titulo}</p>
+        <p><strong>Autor:</strong> ${livro.autor}</p>
+        <p><strong>Editora:</strong> ${livro.editora}</p>
+        <p><strong>Ano de Publicação:</strong> ${livro.anoPublicacao}</p>
+        <p><strong>Gênero:</strong> ${livro.genero}</p>
+        <p><strong>Localização:</strong> ${livro.localizacao}</p>
+        <p><strong>ISSN:</strong> ${livro.ISSN}</p>
+        <button id="fecharPopup">Fechar</button>`
+    popup.classList.add("ativo");
 }
 
 /**
@@ -124,6 +142,20 @@ async function registrarRetirada() {
 /* 
  * Bloco de chamada de eventos
  */ 
+
+document.addEventListener("click", (e) => {
+    if (e.target.innerText === "Mais") {
+        const linha = e.target.closest("tr");
+        const issn = linha.children[0].innerText;
+        mostrarPopup(issn);
+    }
+});
+document.addEventListener("click", (e) => {
+    if (e.target.id === "fecharPopup") {
+        const popup = document.querySelector(".popup");
+        popup.classList.remove("ativo");
+    }
+});
 btnCadastrarLivro.addEventListener("click", cadastrarExemplar)
 btnConsultarLivros.addEventListener("click", consultarLivros)
 btnListarTodosLivros.addEventListener("click", listarTodos)
